@@ -82,7 +82,7 @@
           "policies": {
             "inbound": [
               "api-key-auth",
-              "tier-rate-limit"
+              "gateway-rate-limit"
             ]
           }
         },
@@ -155,7 +155,7 @@
           "policies": {
             "inbound": [
               "api-key-auth",
-              "tier-rate-limit"
+              "gateway-rate-limit"
             ]
           }
         },
@@ -216,7 +216,7 @@
           "policies": {
             "inbound": [
               "api-key-auth",
-              "tier-rate-limit"
+              "gateway-rate-limit"
             ]
           }
         },
