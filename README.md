@@ -11,10 +11,16 @@ Customer  →  Zuplo Gateway (this repo)  →  Python signal backend
 
 ## Endpoints
 
-| Method | Path          | Auth     | Description                                       |
-| ------ | ------------- | -------- | ------------------------------------------------- |
-| GET    | `/v1/signal`  | API key  | Returns a BUY/SELL/HOLD signal for a ticker       |
-| GET    | `/v1/health`  | none     | Health check                                      |
+| Method | Path             | Auth    | Description                                            |
+| ------ | ---------------- | ------- | ------------------------------------------------------ |
+| GET    | `/v1/signal`     | API key | BUY/SELL/HOLD signal with confidence score             |
+| GET    | `/v1/sentiment`  | API key | News sentiment score from recent headlines             |
+| GET    | `/v1/multiframe` | API key | Trend alignment across daily / weekly / monthly        |
+| GET    | `/v1/health`     | none    | Health check                                           |
+
+## Live demo
+
+A public demo dashboard that calls all three endpoints is available — see the GitHub PR description for the URL.
 
 ### Example
 
@@ -37,14 +43,18 @@ curl -H "Authorization: Bearer YOUR_API_KEY" \
 
 ---
 
-## Pricing tiers (configure in Zuplo dashboard)
+## Pricing tiers (already wired in policies.json)
 
-| Tier | Daily limit | Suggested price |
-| ---- | ----------- | --------------- |
-| Free | 100 calls   | $0              |
-| Pro  | 10,000 calls| $9.99 / month   |
+| Tier | Daily limit  | Suggested price | How to assign                              |
+| ---- | ------------ | --------------- | ------------------------------------------ |
+| Free | 100 calls    | $0              | Default for all keys                       |
+| Pro  | 10,000 calls | $9.99 / month   | Set consumer metadata `tier=pro` in Zuplo  |
 
-The default policy in `config/policies.json` enforces the **free** tier (100 calls / 24h per API key). Add a Pro tier in the Zuplo dashboard and override the rate limit on a per-key basis.
+The `tier-rate-limit` policy in `config/policies.json` uses Zuplo's **complex-rate-limit-inbound** policy: keys with metadata `tier=pro` get 10k/day, everyone else gets 100/day automatically. To upgrade a customer to Pro:
+
+1. Open the Zuplo dashboard → API Key Service → find the consumer
+2. Add metadata: `{ "tier": "pro" }`
+3. The next request from that key uses the higher limit
 
 ---
 
