@@ -42,7 +42,12 @@
       "handler": {
         "export": "CorsInboundPolicy",
         "module": "$import(@zuplo/runtime)",
-        "options": "$import(./cors-anything-goes)"
+        "options": {
+          "allowOriginsAnything": true,
+          "allowHeaders": ["Authorization", "Content-Type"],
+          "allowMethods": ["GET", "OPTIONS"],
+          "allowCredentials": false
+        }
       }
     }
   ]
