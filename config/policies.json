@@ -12,18 +12,27 @@
       }
     },
     {
-      "name": "rate-limit-free-tier",
-      "policyType": "rate-limit-inbound",
+      "name": "tier-rate-limit",
+      "policyType": "complex-rate-limit-inbound",
       "handler": {
-        "export": "RateLimitInboundPolicy",
+        "export": "ComplexRateLimitInboundPolicy",
         "module": "$import(@zuplo/runtime)",
         "options": {
-          "rateLimitBy": "user",
-          "requestsAllowed": 100,
-          "timeWindowMinutes": 1440,
-          "headers": {
-            "headerMode": "standard"
-          }
+          "rateLimits": [
+            {
+              "rateLimitBy": "user",
+              "requestsAllowed": 10000,
+              "timeWindowMinutes": 1440,
+              "matchingMetadata": { "tier": "pro" },
+              "headers": { "headerMode": "standard" }
+            },
+            {
+              "rateLimitBy": "user",
+              "requestsAllowed": 100,
+              "timeWindowMinutes": 1440,
+              "headers": { "headerMode": "standard" }
+            }
+          ]
         }
       }
     },

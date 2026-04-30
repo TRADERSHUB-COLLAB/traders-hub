@@ -1,9 +1,9 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "title": "Traders Hub — Intraday Trading Signal API",
-    "description": "Get BUY / SELL / HOLD signals for any US stock ticker, based on RSI and moving-average crossover indicators. Built for intraday traders, algo developers, and dashboard builders.\n\n## Getting Started\n\nAll endpoints return JSON. Pass your API key via the `Authorization: Bearer <key>` header. Get a free key from the developer portal.\n\n## Pricing Tiers\n\n- **Free**: 100 calls / day\n- **Pro**: 10,000 calls / day (configure in the Zuplo dashboard)\n\n## Disclaimer\n\nFor informational purposes only. Not financial advice.",
+    "description": "Trading signals, news sentiment, and multi-timeframe analysis for any US stock ticker.\n\n## Endpoints\n\n- **`/v1/signal`** — BUY / SELL / HOLD recommendation with confidence score\n- **`/v1/sentiment`** — News sentiment scoring from recent headlines\n- **`/v1/multiframe`** — Trend alignment across daily, weekly, monthly\n- **`/v1/health`** — Public health check\n\n## Authentication\n\nPass your API key via `Authorization: Bearer <key>`. Get one from the developer portal.\n\n## Pricing Tiers\n\n- **Free**: 100 calls / day  (default — applied to all keys)\n- **Pro**: 10,000 calls / day  (assign in Zuplo dashboard via consumer metadata `tier=pro`)\n\n## Disclaimer\n\nFor informational purposes only. Not financial advice.",
     "contact": {
       "name": "Traders Hub Support",
       "email": "kobusmnel@gmail.com"
@@ -13,50 +13,19 @@
     "/v1/signal": {
       "get": {
         "summary": "Get a trading signal",
-        "description": "**Returns a BUY / SELL / HOLD recommendation** for a given US stock ticker, with a confidence score (0-100), last price, and the underlying indicator values (RSI, trend).\n\n### Example\n\n`GET /v1/signal?ticker=AAPL`\n\n```json\n{\n  \"ticker\": \"AAPL\",\n  \"signal\": \"BUY\",\n  \"confidence\": 70,\n  \"last_price\": 271.35,\n  \"indicators\": { \"rsi\": 61.64, \"rsi_status\": \"neutral\", \"trend\": \"uptrend\" }\n}\n```",
+        "description": "**Returns a BUY / SELL / HOLD recommendation** for a given US stock ticker, with a confidence score (0-100), last price, and the underlying indicator values (RSI, trend).",
         "operationId": "get-signal",
         "parameters": [
-          {
-            "name": "ticker",
-            "in": "query",
-            "required": true,
-            "schema": { "type": "string", "minLength": 1, "maxLength": 8 },
-            "description": "Stock ticker symbol, e.g. AAPL, TSLA, MSFT",
-            "example": "AAPL"
-          },
-          {
-            "name": "period",
-            "in": "query",
-            "required": false,
-            "schema": { "type": "string", "enum": ["1mo", "3mo", "6mo", "1y"], "default": "3mo" },
-            "description": "How much price history to analyse"
-          }
+          { "name": "ticker", "in": "query", "required": true, "schema": { "type": "string", "minLength": 1, "maxLength": 8 }, "description": "Stock ticker symbol", "example": "AAPL" },
+          { "name": "period", "in": "query", "required": false, "schema": { "type": "string", "enum": ["1mo", "3mo", "6mo", "1y"], "default": "3mo" }, "description": "How much price history to analyse" }
         ],
         "responses": {
           "200": {
             "description": "Trading signal returned successfully",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Signal" },
-                "examples": {
-                  "buy_aapl": {
-                    "summary": "Bullish signal for AAPL",
-                    "value": {
-                      "ticker": "AAPL",
-                      "signal": "BUY",
-                      "confidence": 70,
-                      "last_price": 271.35,
-                      "indicators": { "rsi": 61.64, "rsi_status": "neutral", "trend": "uptrend" },
-                      "as_of": "2026-04-30T20:22:34Z",
-                      "disclaimer": "For informational purposes only. Not financial advice."
-                    }
-                  }
-                }
-              }
-            }
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Signal" } } }
           },
           "401": { "description": "Missing or invalid API key" },
-          "404": { "description": "Ticker not found or insufficient price data" },
+          "404": { "description": "Ticker not found" },
           "429": { "description": "Rate limit exceeded" },
           "502": { "description": "Upstream price-data error" }
         },
@@ -70,9 +39,72 @@
               "rewritePattern": "/signal"
             }
           },
-          "policies": {
-            "inbound": ["api-key-auth", "rate-limit-free-tier"]
-          }
+          "policies": { "inbound": ["api-key-auth", "tier-rate-limit"] }
+        },
+        "tags": ["Signals"]
+      }
+    },
+    "/v1/sentiment": {
+      "get": {
+        "summary": "Get news sentiment",
+        "description": "**Aggregates the most recent news headlines** for a ticker and returns a sentiment score (0-100, where 50 = neutral). Each headline is scored against a curated bullish/bearish lexicon and the overall sentiment is normalized to a single number.",
+        "operationId": "get-sentiment",
+        "parameters": [
+          { "name": "ticker", "in": "query", "required": true, "schema": { "type": "string", "minLength": 1, "maxLength": 8 }, "example": "TSLA" },
+          { "name": "headlines", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 5, "maximum": 50, "default": 20 }, "description": "How many recent headlines to analyse" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sentiment analysis returned successfully",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Sentiment" } } }
+          },
+          "401": { "description": "Missing or invalid API key" },
+          "404": { "description": "No recent news for ticker" },
+          "429": { "description": "Rate limit exceeded" }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "https://traders-hub-signals.pplx.app/port/5000",
+              "rewritePattern": "/sentiment"
+            }
+          },
+          "policies": { "inbound": ["api-key-auth", "tier-rate-limit"] }
+        },
+        "tags": ["Signals"]
+      }
+    },
+    "/v1/multiframe": {
+      "get": {
+        "summary": "Multi-timeframe trend analysis",
+        "description": "**Returns trend alignment** across daily, weekly, and monthly timeframes. When all three align in the same direction, you get a STRONG_BULLISH or STRONG_BEARISH verdict with high confidence — useful for filtering high-probability setups.",
+        "operationId": "get-multiframe",
+        "parameters": [
+          { "name": "ticker", "in": "query", "required": true, "schema": { "type": "string", "minLength": 1, "maxLength": 8 }, "example": "NVDA" }
+        ],
+        "responses": {
+          "200": {
+            "description": "Multi-timeframe analysis returned successfully",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Multiframe" } } }
+          },
+          "401": { "description": "Missing or invalid API key" },
+          "404": { "description": "Ticker not found" },
+          "429": { "description": "Rate limit exceeded" }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlForwardHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "baseUrl": "https://traders-hub-signals.pplx.app/port/5000",
+              "rewritePattern": "/multiframe"
+            }
+          },
+          "policies": { "inbound": ["api-key-auth", "tier-rate-limit"] }
         },
         "tags": ["Signals"]
       }
@@ -83,17 +115,7 @@
         "description": "Verify the API and its upstream backend are alive. No API key required.",
         "operationId": "health",
         "responses": {
-          "200": {
-            "description": "API is healthy",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": { "status": { "type": "string", "example": "ok" } }
-                }
-              }
-            }
-          }
+          "200": { "description": "API is healthy" }
         },
         "x-zuplo-route": {
           "corsPolicy": "anything-goes",
@@ -111,38 +133,83 @@
     }
   },
   "tags": [
-    { "name": "Signals", "description": "Trading signal endpoints — BUY / SELL / HOLD recommendations." },
-    { "name": "System", "description": "System endpoints — health checks, metadata." }
+    { "name": "Signals", "description": "Trading signal endpoints — recommendations, sentiment, and multi-timeframe analysis." },
+    { "name": "System", "description": "System endpoints — health checks." }
   ],
   "components": {
     "schemas": {
       "Signal": {
-        "description": "A trading signal response with the recommendation, confidence, and underlying indicator values.",
         "type": "object",
         "properties": {
-          "ticker": { "type": "string", "description": "The ticker symbol that was analysed", "example": "AAPL" },
-          "signal": { "type": "string", "enum": ["BUY", "SELL", "HOLD"], "description": "The recommendation" },
-          "confidence": { "type": "integer", "minimum": 0, "maximum": 100, "description": "Confidence score 0-100. Higher = stronger signal." },
-          "last_price": { "type": "number", "description": "The last close price used in the calculation" },
+          "ticker": { "type": "string", "example": "AAPL" },
+          "signal": { "type": "string", "enum": ["BUY", "SELL", "HOLD"] },
+          "confidence": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "last_price": { "type": "number" },
           "indicators": {
             "type": "object",
             "properties": {
-              "rsi": { "type": "number", "description": "Relative Strength Index value (0-100)" },
-              "rsi_status": { "type": "string", "description": "Plain-English RSI interpretation" },
-              "trend": { "type": "string", "enum": ["uptrend", "downtrend", "sideways"], "description": "10-day vs 30-day moving-average trend" }
+              "rsi": { "type": "number" },
+              "rsi_status": { "type": "string" },
+              "trend": { "type": "string", "enum": ["uptrend", "downtrend", "sideways"] }
             }
           },
-          "as_of": { "type": "string", "format": "date-time", "description": "When the calculation was made (UTC)" },
-          "disclaimer": { "type": "string" }
-        },
-        "required": ["ticker", "signal", "confidence", "last_price", "indicators"]
+          "as_of": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Sentiment": {
+        "type": "object",
+        "properties": {
+          "ticker": { "type": "string" },
+          "sentiment": { "type": "string", "enum": ["bullish", "bearish", "neutral"] },
+          "score": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "headlines_analyzed": { "type": "integer" },
+          "bullish_count": { "type": "integer" },
+          "bearish_count": { "type": "integer" },
+          "neutral_count": { "type": "integer" },
+          "sample_headlines": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "title": { "type": "string" },
+                "publisher": { "type": "string" },
+                "link": { "type": "string" },
+                "score": { "type": "integer", "minimum": -1, "maximum": 1 }
+              }
+            }
+          }
+        }
+      },
+      "Multiframe": {
+        "type": "object",
+        "properties": {
+          "ticker": { "type": "string" },
+          "verdict": { "type": "string", "enum": ["STRONG_BULLISH", "BULLISH", "MIXED", "BEARISH", "STRONG_BEARISH"] },
+          "confidence": { "type": "integer", "minimum": 0, "maximum": 100 },
+          "last_price": { "type": "number" },
+          "timeframes": {
+            "type": "object",
+            "properties": {
+              "daily": { "$ref": "#/components/schemas/TimeframeSnapshot" },
+              "weekly": { "$ref": "#/components/schemas/TimeframeSnapshot" },
+              "monthly": { "$ref": "#/components/schemas/TimeframeSnapshot" }
+            }
+          }
+        }
+      },
+      "TimeframeSnapshot": {
+        "type": "object",
+        "properties": {
+          "trend": { "type": "string", "enum": ["uptrend", "downtrend", "sideways", "unknown"] },
+          "rsi": { "type": ["number", "null"] }
+        }
       }
     },
     "securitySchemes": {
       "ApiKeyAuth": {
         "type": "http",
         "scheme": "bearer",
-        "description": "Pass your API key as `Authorization: Bearer <your-key>`. Get one from the developer portal."
+        "description": "Pass your API key as `Authorization: Bearer <your-key>`."
       }
     }
   },
