@@ -1,13 +1,40 @@
 {
   "policies": [
     {
+      "name": "api-key-auth",
+      "policyType": "api-key-inbound",
       "handler": {
-        "export": "MockApiInboundPolicy",
+        "export": "ApiKeyInboundPolicy",
         "module": "$import(@zuplo/runtime)",
-        "options": {}
-      },
-      "name": "mock-api-inbound",
-      "policyType": "mock-api-inbound"
+        "options": {
+          "allowUnauthenticatedRequests": false
+        }
+      }
+    },
+    {
+      "name": "rate-limit-free-tier",
+      "policyType": "rate-limit-inbound",
+      "handler": {
+        "export": "RateLimitInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "rateLimitBy": "user",
+          "requestsAllowed": 100,
+          "timeWindowMinutes": 1440,
+          "headers": {
+            "headerMode": "standard"
+          }
+        }
+      }
+    },
+    {
+      "name": "anything-goes",
+      "policyType": "cors-inbound",
+      "handler": {
+        "export": "CorsInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": "$import(./cors-anything-goes)"
+      }
     }
   ]
 }

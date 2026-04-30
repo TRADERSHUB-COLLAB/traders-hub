@@ -1,29 +1,84 @@
-## Zuplo API
+# Traders Hub — Intraday Trading Signal API
 
-This is a Zuplo API that was created with
-[`create-zuplo-api`](https://zuplo.com/docs).
+A Zuplo-powered, monetizable API that returns **BUY / SELL / HOLD** signals for any US stock ticker, based on RSI and moving-average crossover indicators.
 
-## Getting Started
-
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
+```
+Customer  →  Zuplo Gateway (this repo)  →  Python signal backend
+              [API keys + rate limit]      [traders-hub-signals.pplx.app]
 ```
 
-Open [http://localhost:9000](http://localhost:9000) with your browser to see the
-result.
+---
 
-You can start editing the API by modifying `config/routes.oas.json`. The dev
-server will automatically reload the API with your changes.
+## Endpoints
 
-## Learn More
+| Method | Path          | Auth     | Description                                       |
+| ------ | ------------- | -------- | ------------------------------------------------- |
+| GET    | `/v1/signal`  | API key  | Returns a BUY/SELL/HOLD signal for a ticker       |
+| GET    | `/v1/health`  | none     | Health check                                      |
 
-To learn more about Zuplo, you can visit the
-[Zuplo documentation](https://zuplo.com/docs).
+### Example
 
-To connect with the community join [Discord](https://discord.zuplo.com).
+```bash
+curl -H "Authorization: Bearer YOUR_API_KEY" \
+  "https://YOUR-ZUPLO-DOMAIN/v1/signal?ticker=AAPL"
+```
+
+```json
+{
+  "ticker": "AAPL",
+  "signal": "BUY",
+  "confidence": 70,
+  "last_price": 271.35,
+  "indicators": { "rsi": 61.64, "rsi_status": "neutral", "trend": "uptrend" },
+  "as_of": "2026-04-30T20:22:34Z",
+  "disclaimer": "For informational purposes only. Not financial advice."
+}
+```
+
+---
+
+## Pricing tiers (configure in Zuplo dashboard)
+
+| Tier | Daily limit | Suggested price |
+| ---- | ----------- | --------------- |
+| Free | 100 calls   | $0              |
+| Pro  | 10,000 calls| $9.99 / month   |
+
+The default policy in `config/policies.json` enforces the **free** tier (100 calls / 24h per API key). Add a Pro tier in the Zuplo dashboard and override the rate limit on a per-key basis.
+
+---
+
+## Backend
+
+The signal logic lives in a Python FastAPI service hosted at:
+
+**https://traders-hub-signals.pplx.app**
+
+Source: [`/home/user/workspace/trading-signal-api/main.py`] (deployed via Perplexity Computer)
+
+The Zuplo gateway forwards `/v1/signal` → `https://traders-hub-signals.pplx.app/port/5000/signal` using a `urlForwardHandler`.
+
+---
+
+## Local development
+
+```bash
+npm install
+npm run dev
+```
+
+Visit [http://localhost:9000](http://localhost:9000).
+
+---
+
+## Going live
+
+1. Push to `main` — Zuplo auto-deploys.
+2. In the Zuplo dashboard:
+   - Open the **API Keys** service and create your first consumer key.
+   - Set up a Stripe-backed plan if you want to charge customers (see the `money-api` reference repo for a full example).
+3. List the API on RapidAPI pointing customers to your Zuplo URL.
+
+## Disclaimer
+
+For informational and educational purposes only. Not financial advice. Past performance does not guarantee future results.

@@ -2,298 +2,149 @@
   "openapi": "3.1.0",
   "info": {
     "version": "1.0.0",
-    "title": "Todo API",
-    "description": "A simple task management API that lets you create, read, update, and delete todo items. Use this API to build productivity apps, task trackers, or integrate task management into your existing workflows.\n\n## Getting Started\n\nAll endpoints accept and return JSON. To create your first todo, send a `POST` request to `/todos` with a title and userId.\n\n## Authentication\n\nThis sample API does not require authentication. Add [API key authentication](https://zuplo.com/docs/policies/api-key-inbound) or any other policy via your Zuplo gateway configuration.",
+    "title": "Traders Hub — Intraday Trading Signal API",
+    "description": "Get BUY / SELL / HOLD signals for any US stock ticker, based on RSI and moving-average crossover indicators. Built for intraday traders, algo developers, and dashboard builders.\n\n## Getting Started\n\nAll endpoints return JSON. Pass your API key via the `Authorization: Bearer <key>` header. Get a free key from the developer portal.\n\n## Pricing Tiers\n\n- **Free**: 100 calls / day\n- **Pro**: 10,000 calls / day (configure in the Zuplo dashboard)\n\n## Disclaimer\n\nFor informational purposes only. Not financial advice.",
     "contact": {
-      "name": "API Support",
-      "url": "https://zuplo.com/docs",
-      "email": "support@zuplo.com"
+      "name": "Traders Hub Support",
+      "email": "kobusmnel@gmail.com"
     }
   },
   "paths": {
-    "/todos": {
+    "/v1/signal": {
       "get": {
-        "summary": "Get all todos",
-        "description": "**Retrieves a complete list of all todo items** from the system. This endpoint returns all todos regardless of their completion status or owner, making it useful for displaying comprehensive todo lists or performing bulk operations.",
+        "summary": "Get a trading signal",
+        "description": "**Returns a BUY / SELL / HOLD recommendation** for a given US stock ticker, with a confidence score (0-100), last price, and the underlying indicator values (RSI, trend).\n\n### Example\n\n`GET /v1/signal?ticker=AAPL`\n\n```json\n{\n  \"ticker\": \"AAPL\",\n  \"signal\": \"BUY\",\n  \"confidence\": 70,\n  \"last_price\": 271.35,\n  \"indicators\": { \"rsi\": 61.64, \"rsi_status\": \"neutral\", \"trend\": \"uptrend\" }\n}\n```",
+        "operationId": "get-signal",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "minLength": 1, "maxLength": 8 },
+            "description": "Stock ticker symbol, e.g. AAPL, TSLA, MSFT",
+            "example": "AAPL"
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "string", "enum": ["1mo", "3mo", "6mo", "1y"], "default": "3mo" },
+            "description": "How much price history to analyse"
+          }
+        ],
         "responses": {
           "200": {
-            "description": "A list of todos",
+            "description": "Trading signal returned successfully",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Todo"
-                  }
-                },
+                "schema": { "$ref": "#/components/schemas/Signal" },
                 "examples": {
-                  "mixed_todos": {
-                    "summary": "A list of todos with different completion states",
-                    "value": [
-                      {
-                        "id": 1,
-                        "title": "Buy groceries",
-                        "completed": false,
-                        "userId": 123
-                      },
-                      {
-                        "id": 2,
-                        "title": "Write documentation",
-                        "completed": true,
-                        "userId": 456
-                      },
-                      {
-                        "id": 3,
-                        "title": "Review pull requests",
-                        "completed": false,
-                        "userId": 123
-                      }
-                    ]
-                  }
-                }
-              }
-            }
-          }
-        },
-        "operationId": "get-all-todos",
-        "x-zuplo-route": {
-          "corsPolicy": "none",
-          "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "baseUrl": "https://todo.zuplo.io"
-            }
-          }
-        },
-        "tags": ["Todo"]
-      },
-      "post": {
-        "summary": "Create a new todo",
-        "description": "**Creates a new todo item** with the provided details. The todo will be assigned a unique ID automatically and can include a title, completion status, and user association. This is the primary endpoint for adding new tasks to the system.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/CreateTodo"
-              }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Todo created successfully",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Todo"
-                },
-                "examples": {
-                  "new_todo": {
-                    "summary": "A newly created todo",
+                  "buy_aapl": {
+                    "summary": "Bullish signal for AAPL",
                     "value": {
-                      "id": 4,
-                      "title": "Deploy application",
-                      "completed": false,
-                      "userId": 789
+                      "ticker": "AAPL",
+                      "signal": "BUY",
+                      "confidence": 70,
+                      "last_price": 271.35,
+                      "indicators": { "rsi": 61.64, "rsi_status": "neutral", "trend": "uptrend" },
+                      "as_of": "2026-04-30T20:22:34Z",
+                      "disclaimer": "For informational purposes only. Not financial advice."
                     }
                   }
                 }
               }
             }
           },
-          "400": {
-            "description": "Invalid request body"
-          }
+          "401": { "description": "Missing or invalid API key" },
+          "404": { "description": "Ticker not found or insufficient price data" },
+          "429": { "description": "Rate limit exceeded" },
+          "502": { "description": "Upstream price-data error" }
         },
-        "operationId": "create-todo",
         "x-zuplo-route": {
-          "corsPolicy": "none",
+          "corsPolicy": "anything-goes",
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "baseUrl": "https://todo.zuplo.io"
+              "baseUrl": "https://traders-hub-signals.pplx.app/port/5000",
+              "rewritePattern": "/signal"
             }
+          },
+          "policies": {
+            "inbound": ["api-key-auth", "rate-limit-free-tier"]
           }
         },
-        "tags": ["Todo"]
+        "tags": ["Signals"]
       }
     },
-    "/todos/{id}": {
-      "put": {
-        "summary": "Update a todo",
-        "description": "**Updates an existing todo item** by its unique identifier. You can modify any combination of the todo's properties including title, completion status, and user assignment. All changes are applied atomically to ensure data consistency.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "The todo ID"
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/UpdateTodo"
-              }
-            }
-          }
-        },
+    "/v1/health": {
+      "get": {
+        "summary": "Health check",
+        "description": "Verify the API and its upstream backend are alive. No API key required.",
+        "operationId": "health",
         "responses": {
           "200": {
-            "description": "Todo updated successfully",
+            "description": "API is healthy",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Todo"
-                },
-                "examples": {
-                  "updated_todo": {
-                    "summary": "A todo that has been updated",
-                    "value": {
-                      "id": 1,
-                      "title": "Buy groceries and cook dinner",
-                      "completed": true,
-                      "userId": 123
-                    }
-                  }
+                  "type": "object",
+                  "properties": { "status": { "type": "string", "example": "ok" } }
                 }
               }
             }
-          },
-          "400": {
-            "description": "Invalid request body"
-          },
-          "404": {
-            "description": "Todo not found"
           }
         },
-        "operationId": "update-todo",
         "x-zuplo-route": {
-          "corsPolicy": "none",
+          "corsPolicy": "anything-goes",
           "handler": {
             "export": "urlForwardHandler",
             "module": "$import(@zuplo/runtime)",
             "options": {
-              "baseUrl": "https://todo.zuplo.io"
+              "baseUrl": "https://traders-hub-signals.pplx.app/port/5000",
+              "rewritePattern": "/health"
             }
           }
         },
-        "tags": ["Todo"]
-      },
-      "delete": {
-        "summary": "Delete a todo",
-        "description": "**Permanently removes a todo item** from the system using its unique identifier. This operation cannot be undone, so use with caution. The endpoint will return a 404 error if the specified todo does not exist.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            },
-            "description": "The todo ID"
-          }
-        ],
-        "responses": {
-          "204": {
-            "description": "Todo deleted successfully"
-          },
-          "404": {
-            "description": "Todo not found"
-          }
-        },
-        "operationId": "delete-todo",
-        "x-zuplo-route": {
-          "corsPolicy": "none",
-          "handler": {
-            "export": "urlForwardHandler",
-            "module": "$import(@zuplo/runtime)",
-            "options": {
-              "baseUrl": "https://todo.zuplo.io"
-            }
-          }
-        },
-        "tags": ["Todo"]
+        "tags": ["System"]
       }
     }
   },
   "tags": [
-    {
-      "name": "Todo",
-      "description": "Endpoints for managing todo items including creating, listing, updating, and deleting tasks."
-    }
+    { "name": "Signals", "description": "Trading signal endpoints — BUY / SELL / HOLD recommendations." },
+    { "name": "System", "description": "System endpoints — health checks, metadata." }
   ],
   "components": {
     "schemas": {
-      "Todo": {
-        "description": "A complete todo item as returned by the API, including its system-assigned ID.",
+      "Signal": {
+        "description": "A trading signal response with the recommendation, confidence, and underlying indicator values.",
         "type": "object",
         "properties": {
-          "id": {
-            "type": "integer",
-            "description": "The todo ID"
+          "ticker": { "type": "string", "description": "The ticker symbol that was analysed", "example": "AAPL" },
+          "signal": { "type": "string", "enum": ["BUY", "SELL", "HOLD"], "description": "The recommendation" },
+          "confidence": { "type": "integer", "minimum": 0, "maximum": 100, "description": "Confidence score 0-100. Higher = stronger signal." },
+          "last_price": { "type": "number", "description": "The last close price used in the calculation" },
+          "indicators": {
+            "type": "object",
+            "properties": {
+              "rsi": { "type": "number", "description": "Relative Strength Index value (0-100)" },
+              "rsi_status": { "type": "string", "description": "Plain-English RSI interpretation" },
+              "trend": { "type": "string", "enum": ["uptrend", "downtrend", "sideways"], "description": "10-day vs 30-day moving-average trend" }
+            }
           },
-          "title": {
-            "type": "string",
-            "description": "The todo title"
-          },
-          "completed": {
-            "type": "boolean",
-            "description": "Whether the todo is completed"
-          },
-          "userId": {
-            "type": "integer",
-            "description": "The user ID who owns the todo"
-          }
+          "as_of": { "type": "string", "format": "date-time", "description": "When the calculation was made (UTC)" },
+          "disclaimer": { "type": "string" }
         },
-        "required": ["id", "title", "completed", "userId"]
-      },
-      "CreateTodo": {
-        "description": "The request body for creating a new todo. Only a title and userId are required.",
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "The todo title"
-          },
-          "completed": {
-            "type": "boolean",
-            "description": "Whether the todo is completed",
-            "default": false
-          },
-          "userId": {
-            "type": "integer",
-            "description": "The user ID who owns the todo"
-          }
-        },
-        "required": ["title", "userId"]
-      },
-      "UpdateTodo": {
-        "description": "The request body for updating a todo. All fields are optional so you can patch individual properties.",
-        "type": "object",
-        "properties": {
-          "title": {
-            "type": "string",
-            "description": "The todo title"
-          },
-          "completed": {
-            "type": "boolean",
-            "description": "Whether the todo is completed"
-          },
-          "userId": {
-            "type": "integer",
-            "description": "The user ID who owns the todo"
-          }
-        }
+        "required": ["ticker", "signal", "confidence", "last_price", "indicators"]
+      }
+    },
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "description": "Pass your API key as `Authorization: Bearer <your-key>`. Get one from the developer portal."
       }
     }
-  }
+  },
+  "security": [{ "ApiKeyAuth": [] }]
 }
