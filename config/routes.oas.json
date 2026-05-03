@@ -685,5 +685,11 @@
     {
       "ApiKeyAuth": []
     }
+  ],
+  "servers": [
+    {
+      "url": "https://traders-hub-main-14ac381.zuplo.app",
+      "description": "Production gateway"
+    }
   ]
 }
