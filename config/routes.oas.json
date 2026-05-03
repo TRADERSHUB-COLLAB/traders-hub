@@ -13,7 +13,7 @@
     "/v1/signal": {
       "get": {
         "summary": "Get a trading signal",
-        "description": "**Returns a BUY / SELL / HOLD recommendation** for a given US stock ticker, with a confidence score (0-100), last price, and the underlying indicator values (RSI, trend).",
+        "description": "**Returns a BUY / SELL / HOLD recommendation** with a confidence score (0-100), last price, and the underlying indicator values (RSI, trend). Works across stocks, crypto, forex, JSE, LSE, indices, and commodities.",
         "operationId": "get-signal",
         "parameters": [
           {
@@ -23,9 +23,9 @@
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 8
+              "maxLength": 12
             },
-            "description": "Stock ticker symbol",
+            "description": "Ticker symbol \u2014 works for stocks (AAPL), crypto (BTC-USD), forex (EURUSD=X), JSE (NPN.JO), LSE (TSCO.L), indices (^GSPC), commodities (GC=F)",
             "example": "AAPL"
           },
           {
@@ -104,9 +104,10 @@
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 8
+              "maxLength": 12
             },
-            "example": "TSLA"
+            "example": "TSLA",
+            "description": "Ticker symbol \u2014 works for stocks (AAPL), crypto (BTC-USD), forex (EURUSD=X), JSE (NPN.JO), LSE (TSCO.L), indices (^GSPC), commodities (GC=F)"
           },
           {
             "name": "headlines",
@@ -177,9 +178,10 @@
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 8
+              "maxLength": 12
             },
-            "example": "NVDA"
+            "example": "NVDA",
+            "description": "Ticker symbol \u2014 works for stocks (AAPL), crypto (BTC-USD), forex (EURUSD=X), JSE (NPN.JO), LSE (TSCO.L), indices (^GSPC), commodities (GC=F)"
           }
         ],
         "responses": {
@@ -254,8 +256,8 @@
     "/signal": {
       "get": {
         "summary": "[Alias] Get a trading signal",
-        "description": "Alias for /v1/signal \u2014 same behavior, kept for compatibility.",
-        "operationId": "get-signal",
+        "description": "**Returns a BUY / SELL / HOLD recommendation** with a confidence score (0-100), last price, and the underlying indicator values (RSI, trend). Works across stocks, crypto, forex, JSE, LSE, indices, and commodities. (Alias of /v1/signal)",
+        "operationId": "get-signal-alias",
         "parameters": [
           {
             "name": "ticker",
@@ -264,9 +266,9 @@
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 8
+              "maxLength": 12
             },
-            "description": "Stock ticker symbol",
+            "description": "Ticker symbol \u2014 works for stocks (AAPL), crypto (BTC-USD), forex (EURUSD=X), JSE (NPN.JO), LSE (TSCO.L), indices (^GSPC), commodities (GC=F)",
             "example": "AAPL"
           },
           {
@@ -336,7 +338,7 @@
       "get": {
         "summary": "[Alias] Get news sentiment",
         "description": "Alias for /v1/sentiment \u2014 same behavior, kept for compatibility.",
-        "operationId": "get-sentiment",
+        "operationId": "get-sentiment-alias",
         "parameters": [
           {
             "name": "ticker",
@@ -345,9 +347,10 @@
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 8
+              "maxLength": 12
             },
-            "example": "TSLA"
+            "example": "TSLA",
+            "description": "Ticker symbol \u2014 works for stocks (AAPL), crypto (BTC-USD), forex (EURUSD=X), JSE (NPN.JO), LSE (TSCO.L), indices (^GSPC), commodities (GC=F)"
           },
           {
             "name": "headlines",
@@ -409,7 +412,7 @@
       "get": {
         "summary": "[Alias] Multi-timeframe trend analysis",
         "description": "Alias for /v1/multiframe \u2014 same behavior, kept for compatibility.",
-        "operationId": "get-multiframe",
+        "operationId": "get-multiframe-alias",
         "parameters": [
           {
             "name": "ticker",
@@ -418,9 +421,10 @@
             "schema": {
               "type": "string",
               "minLength": 1,
-              "maxLength": 8
+              "maxLength": 12
             },
-            "example": "NVDA"
+            "example": "NVDA",
+            "description": "Ticker symbol \u2014 works for stocks (AAPL), crypto (BTC-USD), forex (EURUSD=X), JSE (NPN.JO), LSE (TSCO.L), indices (^GSPC), commodities (GC=F)"
           }
         ],
         "responses": {
@@ -470,7 +474,7 @@
       "get": {
         "summary": "[Alias] Health check",
         "description": "Alias for /v1/health \u2014 same behavior, kept for compatibility.",
-        "operationId": "health",
+        "operationId": "health-alias",
         "responses": {
           "200": {
             "description": "API is healthy"
