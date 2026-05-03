@@ -250,6 +250,247 @@
           "System"
         ]
       }
+    },
+    "/signal": {
+      "get": {
+        "summary": "[Alias] Get a trading signal",
+        "description": "Alias for /v1/signal \u2014 same behavior, kept for compatibility.",
+        "operationId": "get-signal",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8
+            },
+            "description": "Stock ticker symbol",
+            "example": "AAPL"
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "1mo",
+                "3mo",
+                "6mo",
+                "1y"
+              ],
+              "default": "3mo"
+            },
+            "description": "How much price history to analyse"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trading signal returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Signal"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "Ticker not found"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          },
+          "502": {
+            "description": "Upstream price-data error"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "https://traders-hub-signals.pplx.app/port/5000/signal${search}",
+              "forwardSearch": false
+            }
+          },
+          "policies": {
+            "inbound": [
+              "api-key-auth",
+              "gateway-rate-limit"
+            ]
+          }
+        },
+        "tags": [
+          "Signals"
+        ]
+      }
+    },
+    "/sentiment": {
+      "get": {
+        "summary": "[Alias] Get news sentiment",
+        "description": "Alias for /v1/sentiment \u2014 same behavior, kept for compatibility.",
+        "operationId": "get-sentiment",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8
+            },
+            "example": "TSLA"
+          },
+          {
+            "name": "headlines",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 5,
+              "maximum": 50,
+              "default": 20
+            },
+            "description": "How many recent headlines to analyse"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Sentiment analysis returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Sentiment"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "No recent news for ticker"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "https://traders-hub-signals.pplx.app/port/5000/sentiment${search}",
+              "forwardSearch": false
+            }
+          },
+          "policies": {
+            "inbound": [
+              "api-key-auth",
+              "gateway-rate-limit"
+            ]
+          }
+        },
+        "tags": [
+          "Signals"
+        ]
+      }
+    },
+    "/multiframe": {
+      "get": {
+        "summary": "[Alias] Multi-timeframe trend analysis",
+        "description": "Alias for /v1/multiframe \u2014 same behavior, kept for compatibility.",
+        "operationId": "get-multiframe",
+        "parameters": [
+          {
+            "name": "ticker",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 8
+            },
+            "example": "NVDA"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Multi-timeframe analysis returned successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Multiframe"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid API key"
+          },
+          "404": {
+            "description": "Ticker not found"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "https://traders-hub-signals.pplx.app/port/5000/multiframe${search}",
+              "forwardSearch": false
+            }
+          },
+          "policies": {
+            "inbound": [
+              "api-key-auth",
+              "gateway-rate-limit"
+            ]
+          }
+        },
+        "tags": [
+          "Signals"
+        ]
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "[Alias] Health check",
+        "description": "Alias for /v1/health \u2014 same behavior, kept for compatibility.",
+        "operationId": "health",
+        "responses": {
+          "200": {
+            "description": "API is healthy"
+          }
+        },
+        "x-zuplo-route": {
+          "corsPolicy": "anything-goes",
+          "handler": {
+            "export": "urlRewriteHandler",
+            "module": "$import(@zuplo/runtime)",
+            "options": {
+              "rewritePattern": "https://traders-hub-signals.pplx.app/port/5000/health${search}",
+              "forwardSearch": false
+            }
+          }
+        },
+        "tags": [
+          "System"
+        ]
+      }
     }
   },
   "tags": [
