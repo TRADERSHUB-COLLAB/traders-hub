@@ -33,11 +33,37 @@
         "module": "$import(@zuplo/runtime)",
         "options": {
           "allowOriginsAnything": true,
-          "allowHeaders": ["Authorization", "Content-Type"],
-          "allowMethods": ["GET", "OPTIONS"],
+          "allowHeaders": [
+            "Authorization",
+            "Content-Type"
+          ],
+          "allowMethods": [
+            "GET",
+            "OPTIONS"
+          ],
           "allowCredentials": false
         }
       }
+    },
+    {
+      "handler": {
+        "export": "CachingInboundPolicy",
+        "module": "$import(@zuplo/runtime)",
+        "options": {
+          "cacheHttpMethods": [
+            "GET"
+          ],
+          "expirationSecondsTtl": 30,
+          "headers": "content-type",
+          "statusCodes": [
+            200,
+            201,
+            404
+          ]
+        }
+      },
+      "name": "signal-sentiment-cache",
+      "policyType": "caching-inbound"
     }
   ]
 }

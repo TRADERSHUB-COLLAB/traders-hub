@@ -82,7 +82,8 @@
           "policies": {
             "inbound": [
               "api-key-auth",
-              "gateway-rate-limit"
+              "gateway-rate-limit",
+              "signal-sentiment-cache"
             ]
           }
         },
@@ -156,7 +157,8 @@
           "policies": {
             "inbound": [
               "api-key-auth",
-              "gateway-rate-limit"
+              "gateway-rate-limit",
+              "signal-sentiment-cache"
             ]
           }
         },
@@ -168,7 +170,7 @@
     "/v1/multiframe": {
       "get": {
         "summary": "Multi-timeframe trend analysis",
-        "description": "**Returns trend alignment** across daily, weekly, and monthly timeframes. When all three align in the same direction, you get a STRONG_BULLISH or STRONG_BEARISH verdict with high confidence \u2014 useful for filtering high-probability setups.",
+        "description": "**Returns trend alignment** across daily, weekly, and monthly timeframes. When all three align in the same direction, you get a STRONG_BULLISH or STRONG_BEARISH verdict with high confidence — useful for filtering high-probability setups.",
         "operationId": "get-multiframe",
         "parameters": [
           {
@@ -253,6 +255,25 @@
         ]
       }
     },
+    "/:path*": {
+      "x-zuplo-path": {
+        "pathMode": "open-api"
+      },
+      "get": {
+        "summary": "Catch-all 404 (helpful guidance + path logging)",
+        "description": "",
+        "x-zuplo-route": {
+          "corsPolicy": "none",
+          "handler": {
+            "export": "default",
+            "module": "$import(./modules/catch-all-404)",
+            "options": {}
+          },
+          "policies": {
+            "inbound": []
+          }
+        },
+        "operationId": "catch-all-404"
     "/signal": {
       "get": {
         "summary": "[Alias] Get a trading signal",
@@ -500,11 +521,11 @@
   "tags": [
     {
       "name": "Signals",
-      "description": "Trading signal endpoints \u2014 recommendations, sentiment, and multi-timeframe analysis."
+      "description": "Trading signal endpoints — recommendations, sentiment, and multi-timeframe analysis."
     },
     {
       "name": "System",
-      "description": "System endpoints \u2014 health checks."
+      "description": "System endpoints — health checks."
     }
   ],
   "components": {
