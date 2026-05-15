@@ -92,3 +92,20 @@ Visit [http://localhost:9000](http://localhost:9000).
 ## Disclaimer
 
 For informational and educational purposes only. Not financial advice. Past performance does not guarantee future results.
+
+---
+
+## Pine Pro (Ultra tier)
+
+Ultra subscribers get bundled access to the **Pine Pro** TradingView indicator library — the same engine that powers `/v1/signal` exposed as native TradingView scripts across stocks, crypto, forex, JSE, and gold.
+
+See the full guide: [/pine-pro](https://docs.tradershub.dev/pine-pro)
+
+Entitlement check:
+
+```bash
+curl -H "Authorization: Bearer YOUR_ULTRA_KEY" \
+  https://api.tradershub.dev/v1/account/entitlements
+```
+
+A response containing `"pine_pro_access": true` confirms the entitlement.
