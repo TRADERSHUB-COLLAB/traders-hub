@@ -1,6 +1,18 @@
 # Traders Hub — One API. Every Market.
 
-A Zuplo-powered, monetizable signals API delivering **BUY / SELL / HOLD** calls across **10,000+ instruments** spanning **7 markets** — US & global equities, crypto, forex, JSE (South African equities), gold, commodities, and indices. Signals are powered by a multi-indicator engine (RSI, MA crossover, multi-timeframe trend alignment, and news sentiment).
+A Zuplo-powered, monetizable signals API delivering **BUY / SELL / HOLD** calls across **10,000+ instruments** spanning **7 markets**: US Stocks (NYSE/NASDAQ), Crypto, Forex, JSE (Johannesburg Stock Exchange), LSE (London Stock Exchange), Indices, and Commodities. Signals are powered by a multi-indicator engine (RSI, MA crossover, multi-timeframe trend alignment, and news sentiment).
+
+**Coverage at a glance**
+
+| Market | Instruments |
+| ------ | ----------- |
+| US Stocks | 6,000+ tickers (NYSE, NASDAQ) |
+| Crypto | 500+ coins (BTC, ETH, SOL, …) |
+| Forex | 180 pairs (majors, minors, EM) |
+| JSE | 350 stocks |
+| LSE | 2,000 stocks |
+| Indices | 50 globals (S&P 500, Dow, Nasdaq, FTSE, DAX, …) |
+| Commodities | 30 futures (Gold, Oil, Silver, Copper, Natgas, …) |
 
 ```
 Customer  →  Zuplo Gateway (this repo)  →  Python signal backend
