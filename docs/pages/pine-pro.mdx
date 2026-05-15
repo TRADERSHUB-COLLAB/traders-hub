@@ -1,0 +1,54 @@
+---
+title: Pine Pro Access
+description: Premium TradingView Pine Script indicators bundled with the TradersHub Ultra plan.
+---
+
+# Pine Pro Access
+
+Pine Pro is the premium tier of TradersHub indicators built natively for TradingView. It is bundled with the **Ultra** plan and unlocks the full suite of multi-market BUY/SELL strategies powered by the TradersHub API.
+
+## What you get
+
+- **Full indicator library** — every published Pine Pro script across stocks, crypto, forex, JSE, and gold.
+- **Live API-linked signals** — indicators read from the same engine that powers `/signals` on the API.
+- **All endpoints, all markets** — no per-market gating; one key unlocks everything.
+- **Priority updates** — new strategies and refinements ship to Ultra users first.
+- **Invite-only TradingView access** — scripts are added to your TradingView username after verification.
+
+## How access works
+
+1. Subscribe to the **Ultra** plan on RapidAPI or via the TradersHub site.
+2. Your API key is automatically flagged with `pine_pro_access: true` at the gateway.
+3. Submit your TradingView username through the access form linked in your welcome email.
+4. Scripts are granted to your TradingView account, typically within one business day.
+
+## Verifying your access
+
+Call the gateway with your Ultra key:
+
+```bash
+curl -H "Authorization: Bearer YOUR_ULTRA_KEY" \
+  https://api.tradershub.dev/v1/account/entitlements
+```
+
+A response containing `"pine_pro_access": true` confirms your entitlement is live.
+
+## FAQ
+
+**Can I get Pine Pro without the API?**
+Pine Pro is bundled with the Ultra plan and is not sold separately. The plan includes the full API quota as well.
+
+**Do indicators work on the free TradingView tier?**
+Yes. A free TradingView account is sufficient to receive and run Pine Pro scripts.
+
+**What happens if I downgrade?**
+Indicator access is revoked at the end of the current billing cycle. Your API key continues to work on the lower tier’s quota.
+
+**Can I share scripts with my team?**
+Each Ultra seat maps to one TradingView username. Additional seats can be added from your account dashboard.
+
+## Next steps
+
+- [Compare plans](/#pricing)
+- [API Reference](/introduction)
+- Need help? Reach out via the support channel listed in your welcome email.
