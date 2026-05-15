@@ -109,7 +109,7 @@ For informational and educational purposes only. Not financial advice. Past perf
 
 ## Pine Pro (Ultra tier)
 
-Ultra subscribers get bundled access to the **Pine Pro** TradingView indicator library — the same engine that powers `/v1/signal` exposed as native TradingView scripts across stocks, crypto, forex, JSE, and gold.
+Ultra subscribers get bundled access to the **Pine Pro** TradingView indicator library — the same engine that powers `/v1/signal` exposed as native TradingView scripts across US Stocks, Crypto, Forex, JSE, LSE, Indices, and Commodities.
 
 See the full guide: [/pine-pro](https://docs.tradershub.dev/pine-pro)
 
