@@ -37,6 +37,10 @@ const config: ZudokuConfig = {
               type: "doc",
               file: "markdown",
             },
+                        {
+                            type: "doc",
+                            file: "pine-pro",
+                          },
           ],
         },
         {
