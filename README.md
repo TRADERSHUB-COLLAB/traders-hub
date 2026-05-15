@@ -1,6 +1,6 @@
-# Traders Hub — Intraday Trading Signal API
+# Traders Hub — One API. Every Market.
 
-A Zuplo-powered, monetizable API that returns **BUY / SELL / HOLD** signals for any US stock ticker, based on RSI and moving-average crossover indicators.
+A Zuplo-powered, monetizable signals API delivering **BUY / SELL / HOLD** calls across **10,000+ instruments** spanning **7 markets** — US & global equities, crypto, forex, JSE (South African equities), gold, commodities, and indices. Signals are powered by a multi-indicator engine (RSI, MA crossover, multi-timeframe trend alignment, and news sentiment).
 
 ```
 Customer  →  Zuplo Gateway (this repo)  →  Python signal backend
