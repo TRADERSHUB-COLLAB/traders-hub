@@ -1,0 +1,20 @@
+name: Cleanup on Branch Delete
+on:
+  delete
+jobs:
+  cleanup:
+    if: github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    env:
+      ZUPLO_API_KEY: ${{ secrets.ZUPLO_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: |
+          BRANCH_NAME="${{ github.event.ref }}"
+          ENV_NAME="${BRANCH_NAME////-}"
+          echo "Deleting environment: $ENV_NAME"
+          npx zuplo delete -environment "$ENV_NAME" -api-key "$ZUPLO_API_KEY" -wait || true
