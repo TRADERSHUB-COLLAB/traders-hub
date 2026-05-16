@@ -1,54 +1,102 @@
 ---
-title: Pine Pro Access
-description: Premium TradingView Pine Script indicators bundled with the TradersHub Ultra plan.
+title: TradersHub Pine Pro
+description: One TradingView script. Every market. See institutional supply, demand, and momentum signals on any chart — powered by the TradersHub engine.
 ---
 
-# Pine Pro Access
+# TradersHub Pine Pro
 
-Pine Pro is the premium tier of TradersHub indicators built natively for TradingView. It is bundled with the **Ultra** plan and unlocks the full suite of multi-market BUY/SELL strategies powered by the TradersHub API.
+**One TradingView script. Every market. Every signal.**
 
-## What you get
+Pine Pro is the TradersHub closed-source indicator that brings our full BUY/SELL engine and Smart Money supply/demand mapping into a single TradingView chart.
 
-- **Full indicator library** — every published Pine Pro script across US Stocks, Crypto, Forex, JSE, LSE, Indices, and Commodities.
-- **Live API-linked signals** — indicators read from the same engine that powers `/signals` on the API.
-- **All endpoints, all markets** — no per-market gating; one key unlocks everything.
-- **Priority updates** — new strategies and refinements ship to Ultra users first.
-- **Invite-only TradingView access** — scripts are added to your TradingView username after verification.
+You add it once. It does the rest.
+
+---
+
+## What you see on your chart
+
+- **BUY / SELL labels** the moment momentum and trend align
+- **Supply zones** drawn above price where smart money is selling
+- **Demand zones** drawn below price where smart money is buying
+- **Trend bias line** so you instantly know which side of the market to trade
+- **🔥 High-probability markers** when a signal fires inside a strong zone aligned with the trend bias
+- **M / W pattern boxes** with auto-drawn necklines for textbook reversals
+- **Built-in TradingView alerts** so you never miss a signal even when the tab is closed
+
+Everything is delivered visually. No reading code. No tuning a dozen settings. Add to chart, get to work.
+
+---
+
+## How it compares
+
+| | Free TV Teaser | **Pine Pro** | Ultra / API |
+|---|---|---|---|
+| BUY / SELL signals | ✓ single timeframe | ✓ single timeframe | ✓ multi-timeframe |
+| Supply / Demand zones | — | ✓ | ✓ with strength score |
+| Trend bias filter | — | ✓ | ✓ |
+| M / W pattern detection | — | ✓ | ✓ |
+| Confluence 🔥 markers | — | ✓ | ✓ |
+| TradingView alerts | ✓ | ✓ | ✓ |
+| Webhook for one symbol | — | ✓ | ✓ |
+| Multi-symbol bulk scan | — | — | ✓ |
+| Liquidity sweep detection | — | — | ✓ |
+| News-sentiment weighting | — | — | ✓ |
+| JSON output for bots & dashboards | — | — | ✓ |
+| Markets | one chart at a time | one chart at a time | every market, one call |
+
+**Free TV Teaser** is the public TradingView script anyone can add to a chart.
+**Pine Pro** is the full TradersHub indicator on TradingView.
+**Ultra / API** unlocks the same engine via REST for bots, dashboards, prop firms, and signal services.
+
+---
+
+## Why it works
+
+TradersHub Pine Pro is built on the same engine that powers our REST API. The visual layer you see on TradingView is the same logic that scores institutional activity across every market we cover — stocks, crypto, forex, JSE, LSE, indices, and gold.
+
+You get the institutional view without writing a single line of code.
+
+---
 
 ## How access works
 
-1. Subscribe to the **Ultra** plan on RapidAPI or via the TradersHub site.
-2. Your API key is automatically flagged with `pine_pro_access: true` at the gateway.
+1. Subscribe to the **Pine Pro** or **Ultra** plan on RapidAPI or via the TradersHub site.
+2. Your API key is automatically flagged with the right entitlement at the gateway.
 3. Submit your TradingView username through the access form linked in your welcome email.
-4. Scripts are granted to your TradingView account, typically within one business day.
+4. The script is granted to your TradingView account, typically within one business day.
 
 ## Verifying your access
 
-Call the gateway with your Ultra key:
+Call the gateway with your key:
 
 ```bash
-curl -H "Authorization: Bearer YOUR_ULTRA_KEY" \
-  https://api.tradershub.dev/v1/account/entitlements
+curl -H "Authorization: Bearer YOUR_KEY" \
+https://api.tradershub.dev/v1/account/entitlements
 ```
 
 A response containing `"pine_pro_access": true` confirms your entitlement is live.
 
+---
+
 ## FAQ
 
-**Can I get Pine Pro without the API?**
-Pine Pro is bundled with the Ultra plan and is not sold separately. The plan includes the full API quota as well.
+**Is the script open source?** No. TradersHub Pine Pro is a closed-source, protected TradingView script. You see it work on your chart; the engine stays ours.
 
-**Do indicators work on the free TradingView tier?**
-Yes. A free TradingView account is sufficient to receive and run Pine Pro scripts.
+**Does it work on the free TradingView tier?** Yes. A free TradingView account is sufficient.
 
-**What happens if I downgrade?**
-Indicator access is revoked at the end of the current billing cycle. Your API key continues to work on the lower tier’s quota.
+**Can I use it on any symbol?** Yes — stocks, crypto, forex, JSE, LSE, indices, and gold. Anything TradingView charts, Pine Pro reads.
 
-**Can I share scripts with my team?**
-Each Ultra seat maps to one TradingView username. Additional seats can be added from your account dashboard.
+**What happens if I downgrade?** Indicator access is revoked at the end of the current billing cycle. Your API key continues to work on the lower tier’s quota.
+
+**Can I share scripts with my team?** Each seat maps to one TradingView username. Add additional seats from your account dashboard.
+
+**What’s the difference between Pine Pro and Ultra?** Pine Pro is everything you see on a single TradingView chart. Ultra adds multi-timeframe scanning, multi-symbol bulk scans, liquidity sweep detection, sentiment-weighted scoring, and JSON output — the things only an API can deliver.
+
+---
 
 ## Next steps
 
 - [Compare plans](https://tradershub.dev/#pricing)
-- [API Reference](/introduction)
+- [API Reference](https://docs.tradershub.dev/introduction)
+- Try the [free TradingView teaser](https://www.tradingview.com/u/Kobusnel/) to see the engine in action before you upgrade
 - Need help? Reach out via the support channel listed in your welcome email.
