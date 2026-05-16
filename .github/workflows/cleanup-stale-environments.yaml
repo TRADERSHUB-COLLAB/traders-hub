@@ -1,0 +1,29 @@
+name: Cleanup stale environments
+on:
+  schedule:
+    - cron: "0 0 * * *"
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      ZUPLO_API_KEY: ${{ secrets.ZUPLO_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm install
+      - run: |
+          BRANCHES=$(git branch -r | sed 's|origin/||' | tr '/' '-' | tr -d ' ')
+          npx zuplo list -api-key "$ZUPLO_API_KEY" -json > environments.json
+          cat environments.json | jq -r '.[] | .name' | while read ENV; do
+            if [[ "$ENV" == "main" || "$ENV" == "production" || "$ENV" == "staging" ]]; then
+              continue;
+            fi
+            if ! echo "$BRANCHES" | grep -q "^$ENV$"; then
+              echo "Deleting stale environment: $ENV"
+              npx zuplo delete -environment "$ENV" -api-key "$ZUPLO_API_KEY" -wait || true
+            fi
+          done
