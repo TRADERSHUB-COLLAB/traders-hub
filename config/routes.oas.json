@@ -690,27 +690,6 @@
           "System"
         ]
       }
-    },
-    "/(.*)": {
-      "x-zuplo-path": {
-        "pathMode": "url-pattern"
-      },
-      "get": {
-        "summary": "Catch-all 404 (helpful guidance + path logging)",
-        "description": "",
-        "x-zuplo-route": {
-          "corsPolicy": "none",
-          "handler": {
-            "export": "default",
-            "module": "$import(./modules/catch-all-404)",
-            "options": {}
-          },
-          "policies": {
-            "inbound": []
-          }
-        },
-        "operationId": "catch-all-404"
-      }
-    }
   }
 }
+  }
